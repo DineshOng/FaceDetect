@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = (ImageView)findViewById(R.id.imageView);
         btnProgress = (Button)findViewById(R.id.btnProgress);
 
-        final Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.manocc);
+        final Bitmap myBitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.unt);
         imageView.setImageBitmap(myBitmap);
 
         eyePatchBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.eye_patch);
@@ -88,8 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 Frame frame = new Frame.Builder().setBitmap(myBitmap).build();
                 SparseArray<Face> sparseArray = faceDetector.detect(frame);
 
-                for(int i=0;i<sparseArray.size();i++)
-                {
+                for(int i=0;i<sparseArray.size();i++) {
                     Face face = sparseArray.valueAt(i);
 //                    float x1=face.getPosition().x;
 //                    float y1 =face.getPosition().y;
@@ -99,25 +98,47 @@ public class MainActivity extends AppCompatActivity {
 //                    canvas.drawRoundRect(rectF,2,2,rectPaint);
 
                     detectLandmarks(face);
-
+                    if(face.getLandmarks()!=null) {
+                        Toast.makeText(MainActivity.this, "Face detected!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Face not detected!", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 imageView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
-
             }
         });
 
     }
 
+    private boolean checkFace(Face face) {
+        int cx = 0, cy = 0;
+        for (Landmark landmark : face.getLandmarks()) {
+            cx = (int) (landmark.getPosition().x);
+            cy = (int) (landmark.getPosition().y);
+        }
+
+        if(cx!=0 && cy!=0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkFace2(Face face) {
+        if(face.getLandmarks()!=null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private void detectLandmarks(Face face) {
         for (Landmark landmark : face.getLandmarks()) {
-
             int cx = (int) (landmark.getPosition().x);
             int cy = (int) (landmark.getPosition().y);
 
-
-
-
+            //Toast.makeText(MainActivity.this, cx +  " " + cy, Toast.LENGTH_SHORT).show();
             drawEyePatchBitmap(landmark.getType(), cx, cy);
         }
     }
